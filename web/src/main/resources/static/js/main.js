@@ -76,26 +76,30 @@ $(document).ready(function(){
 	    	}
 		});
     }
-  
+
     function initVersionsLink() {
-      // Update other versions info
-      var _str = [];
-      var _version = version_ === '' ? 'realtime' : version_;
-      Object.keys(versions_).sort().filter(function(item) {
-        return item !== _version;
-      }).forEach(function(item) {
+      var _str = [];      
+      Object.keys(versions_).sort().forEach(function(item) {
         var _hash = '#/home';
         var _content = 'Lastest';
-  
+
         if (item !== 'realtime') {
           _hash += '?version=' + item;
           _content = item;
         }
-        _str.push('<span title="' + versions_[item].description + '" ' + 'class="item" hash="' + _hash + '">' + _content + '</span>');
+        var option = '<option title="' + versions_[item].description + '" ' + 'class="item" hash="' + _hash + '">' + _content + '</option>';
+        if (version_ === _content && _str.length > 0) {
+            var tmp = _str[0];
+            _str[0] = option;
+            _str.push(tmp);
+        }
+        else {
+            _str.push(option);
+        }        
       });
       $('#other-version .other-version-content').html(_str.join(''));
-      $('#other-version .other-version-content .item').click(function() {
-        var _hash = $(this).attr('hash');
+      $('#other-version .other-version-content').change(function() {
+        var _hash = $(this)[0].selectedOptions[0].attributes['hash'].value;
         window.location.hash = _hash;
         window.location.reload();
       })
@@ -117,8 +121,8 @@ $(document).ready(function(){
             hide: {event: "mouseout"},
             position: {my:'bottom left',at:'top center', viewport: $(window)}
 	    });
-    } 
-    
+    }
+
     function checkURL() {
       var hash = window.location.hash;
       var hashRegexStr = /^#\/home\?(.+)/;
@@ -156,6 +160,7 @@ $(document).ready(function(){
           window.location.hash = _hash;
         }
       } else {
+          version_ = 'oncotree_latest_stable';
         window.location.hash = '/home';
       }
     }
